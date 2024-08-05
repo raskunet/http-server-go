@@ -43,4 +43,4 @@ To send requests to the server you can use curl. By default the server runs on p
 ```sh
    curl -v http://localhost:4221/files/hello.txt
 ```
-*Only if the server was run with the `--directory` flag
+*Only if the server was run with the `--directory` flag else current `dir` will be used
