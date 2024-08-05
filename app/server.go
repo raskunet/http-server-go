@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -90,13 +89,19 @@ func (req *httpMessage) getFileRequest(conn net.Conn) error {
 	res := r.FindStringSubmatch(string(req.startLine.url))
 
 	args := os.Args
+	currentDir := false
 	if len(args) != 3 {
-		conn.Close()
-		return errors.New("not enough arguments")
+		currentDir = true
 	}
-	dir := args[2]
+	var fileData []byte
+	var err error
+	if currentDir {
+		fileData, err = os.ReadFile(fmt.Sprintf("%s%s", "./", res[1]))
+	} else {
+		dir := args[2]
+		fileData, err = os.ReadFile(fmt.Sprintf("%s%s", dir, res[1]))
+	}
 
-	fileData, err := os.ReadFile(fmt.Sprintf("%s%s", dir, res[1]))
 	if err != nil {
 		conn.Write([]byte("HTTP/1.1 404 Not Found\r\n\r\n"))
 		conn.Close()
@@ -114,13 +119,18 @@ func (req *httpMessage) postFileRequest(conn net.Conn) error {
 	res := r.FindStringSubmatch(string(req.startLine.url))
 
 	args := os.Args
+	currentDir := false
 	if len(args) != 3 {
-		conn.Close()
-		return errors.New("not enough arguments")
+		currentDir = true
 	}
-	dir := args[2]
-
-	fd, err := os.Create(fmt.Sprintf("%s%s", dir, res[1]))
+	var fd *os.File
+	var err error
+	if currentDir {
+		fd, err = os.Create(fmt.Sprintf("%s%s", "./", res[1]))
+	} else {
+		dir := args[2]
+		fd, err = os.Create(fmt.Sprintf("%s%s", dir, res[1]))
+	}
 	if err != nil {
 		conn.Write([]byte("HTPP/1.1 500 Internal Server error"))
 		conn.Close()
@@ -191,7 +201,7 @@ func AcceptConn(addr string) error {
 	if err != nil {
 		return err
 	}
-
+	var wg sync.WaitGroup
 	for {
 		conn, err := l.Accept()
 		if err != nil {
