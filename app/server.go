@@ -201,7 +201,6 @@ func AcceptConn(addr string) error {
 	if err != nil {
 		return err
 	}
-	var wg sync.WaitGroup
 	for {
 		conn, err := l.Accept()
 		if err != nil {
@@ -218,7 +217,7 @@ func requestHandle(conn net.Conn) {
 	req.parseRequest(request)
 	err := req.responseHanldle(conn)
 	if err != nil {
-		panic(err.Error())
+		fmt.Println(err.Error())
 	}
 }
 
