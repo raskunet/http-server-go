@@ -27,7 +27,7 @@ To send requests to the server you can use curl. By default the server runs on p
 ```
 2. Sending requests to `/echo/[str]` returns the `str` back
 ```sh
-   curl -v http://localhost:4221/echo/
+   curl -v http://localhost:4221/echo/[str]
 ```
 3. Sending request to `/user-agent` responds with the client `user-agent`
 ```sh
@@ -37,7 +37,7 @@ To send requests to the server you can use curl. By default the server runs on p
 ```sh
    curl -v -X POST \
    --data "request form curl: lorem ipsum"
-   https://localhost/files/hello.txt
+   https://localhost:4221/files/hello.txt
 ```
 5. *Sending `GET` request to `files/[name of file]` responds with data in that file if it exists
 ```sh
